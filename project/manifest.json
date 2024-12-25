@@ -1,0 +1,22 @@
+{
+    "name": "URL Checker",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+      "activeTab",
+      "tabs",
+      "scripting",
+      "webRequest",
+      "webRequestBlocking"
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ],
+
+    "background": {
+      "service_worker": "main.js"
+    },
+    "action": {
+      "default_popup": "html/popup.html"
+    }
+  }
