@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Текущий URL</title>
+    <style>
+        input{
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="stylePopup.css">
+
+</head>
+<body>
+    <div id="main_div">
+        <div>
+            <button id = "white_list">Открыть белый список</button><br>
+            <input id="input_white_list" type="text">
+            <h2>Текущий URL</h2>
+        </div>
+        <div id="urlBox">
+            <p id="URL">Загрузка...</p>
+        </div>
+        <div>
+            <h2>Безопасность</h2>
+            <p id="safety">Проверка безопасности...</p>
+        </div>
+        <h2>Логи</h2>
+        <button id="logs_Button">Отобразить</button>
+        <div id="logs">
+            <div id="logs_content"></div>
+        </div>
+        <script src="../main.js"></script>
+    </div>
+</body>
+</html>

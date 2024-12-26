@@ -1,0 +1,17 @@
+{
+    "name": "URL Checker",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+      "activeTab",
+      "tabs",
+      "scripting",
+      "https://www.virustotal.com/"
+    ],
+    "background": {
+      "service_worker": "main.js"
+    },
+    "action": {
+      "default_popup": "index.html"
+    }
+  }
