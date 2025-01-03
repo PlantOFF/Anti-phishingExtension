@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "URL Checker and History Saver",
+  "description": "This extension checks URL safety and shows browsing history.",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "history",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "main.js"
+  },
+  "action": {
+    "default_popup": "html/popup.html"
+  }
+}
