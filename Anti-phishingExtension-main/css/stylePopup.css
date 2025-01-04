@@ -1,0 +1,145 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Основной контейнер */
+#main_div {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+}
+
+/* Вкладки */
+#tabs {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    color: #4a4a4a;
+    transition: background-color 0.3s ease, border-bottom 0.3s ease, color 0.3s ease;
+}
+
+.tab-button.active {
+    background-color: #ffffff;
+    font-weight: bold;
+    border-bottom: 3px solid #007bff;
+    color: #007bff;
+}
+
+.tab-button:hover {
+    background-color: #e6e6e6;
+}
+
+/* Содержимое вкладок */
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* URL Box и История */
+#urlBox, #logs {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    max-height: 150px;
+    overflow-y: auto; /* Вертикальная прокрутка */
+    overflow-x: auto; /* Горизонтальная прокрутка */
+    margin-bottom: 20px;
+    white-space: nowrap; /* Текст не переносится на новую строку */
+    text-align: left; /* Выравнивание текста по левому краю */
+}
+
+/* Заголовки */
+h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #4a4a4a;
+    text-align: center;
+}
+
+/* Общие стили для вкладок */
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Whitelist */
+#whitelist {
+    text-align: left;
+}
+
+#whitelist input {
+    width: calc(100% - 120px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+#whitelist button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#whitelist button:hover {
+    background-color: #0056b3;
+}
+
+#whitelist ul {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+#whitelist ul li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
