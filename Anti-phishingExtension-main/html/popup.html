@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Checker</title>
+    <link rel="stylesheet" href="../css/stylePopup.css">
+</head>
+<body>
+<div id="main_div">
+    <!-- Вкладки -->
+    <div id="tabs">
+        <button class="tab-button active" data-tab="urlTab">Текущий URL</button>
+        <button class="tab-button" data-tab="historyTab">История блокировок</button>
+        <button class="tab-button" data-tab="whitelistTab">Whitelist</button>
+    </div>
+    <!-- Содержимое вкладок -->
+    <div id="urlTab" class="tab-content active">
+        <h2>Текущий URL</h2>
+        <div id="urlBox">
+            <p id="URL">Загрузка...</p>
+        </div>
+        <h2>Безопасность</h2>
+        <p id="safety">Проверка безопасности...</p>
+    </div>
+    <div id="historyTab" class="tab-content">
+        <h2>История блокировок</h2>
+        <div id="logs">
+
+            <ul id="blocked-list"></ul>
+        </div>
+    </div>
+    <div id="whitelistTab" class="tab-content">
+        <h2>Whitelist</h2>
+        <div id="whitelist">
+            <p>Добавьте URL в белый список:</p>
+            <input type="text" id="whitelistInput" placeholder="Введите URL">
+            <button id="addWhitelistButton">Добавить</button>
+            <ul id="whitelistItems"></ul>
+        </div>
+    </div>
+</div>
+<script src="../popup.js"></script>
+</body>
+</html>
