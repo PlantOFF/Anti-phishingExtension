@@ -31,6 +31,12 @@ function getBaseUrl(url) {
 };
 
 
+function addToWhitelist() {
+    alert("Сайт добавлен в whitelist!");
+    // Здесь вы можете добавить логику для работы с whitelist
+}
+
+
 // Функция для проверки безопасности URL
 async function checkUrlSafety(url) {
     try {
@@ -87,7 +93,7 @@ async function handleTabUpdate(tabId, tab) {
                     "Подозрительные: " + safetyResult[1] + "\n" +
                     "Опасные: " + safetyResult[2]);
 
-                if (safetyResult[2] > 2 || safetyResult[1] > 2) {
+                if (safetyResult[2] > 1 || safetyResult[1] > 0) {
                     chrome.tabs.update(tabId, { url: 'html/blockURL.html' });
                     console.log("URL заблокирован.");
 
@@ -112,5 +118,23 @@ async function handleTabUpdate(tabId, tab) {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.url) {
         handleTabUpdate(tabId, tab);
+    }
+});
+
+//
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'addToWhitelist') {
+        const url = message.url.trim();
+        if (!black_list.includes(url)) {
+            black_list.push(url);
+            console.log(`Добавлено в белый список: ${url}`);
+            sendResponse({ success: true });
+        } else {
+            console.log(`URL уже существует в белом списке: ${url}`);
+            sendResponse({ success: false, error: 'URL уже в белом списке' });
+        }
+    } else if (message.action === 'getWhitelist') {
+        sendResponse({ success: true, whitelist });
     }
 });

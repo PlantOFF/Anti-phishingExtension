@@ -74,6 +74,42 @@ async function checkUrlSafety(url) {
 }
 
 
+// Добавление заблокированных сайтов
+document.addEventListener('DOMContentLoaded', () => {
+    chrome.storage.local.get({ blocked: [] }, (result) => {
+        const list = document.getElementById('blocked-list');
+        result.blocked.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `[${item.time}] - ${item.url}`;
+            list.appendChild(li);
+        });
+    });
+});
+
+
+
+// Переключение вкладок
+document.addEventListener("DOMContentLoaded", () => {
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const targetTab = button.getAttribute("data-tab");
+
+            // Удаляем активный класс со всех кнопок и вкладок
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            tabContents.forEach((content) => content.classList.remove("active"));
+
+            // Добавляем активный класс на выбранную кнопку и вкладку
+            button.classList.add("active");
+            document.getElementById(targetTab).classList.add("active");
+        });
+    });
+});
+
+
+
 // Основная логика
 chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {{
         let currentURL = tabs[0].url;
@@ -104,7 +140,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {{
                     console.log('URL подозрителен или опасен, вкладка заменена.');
                 }
 
-                return;
             }
             else{
                 safetyElement.innerHTML = "Вероятно такого url нет в базе"
@@ -117,11 +152,20 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {{
         }
 }});
 
-
-// Кнопка открытия истории
-openHistoryButton.addEventListener("click", function() {
-    chrome.tabs.create({ url: chrome.runtime.getURL("html/history.html")});
+// White лист
+document.getElementById('addWhitelistButton').addEventListener('click', () => {
+    const url = document.getElementById('whitelistInput').value.trim();
+    if (url) {
+        chrome.runtime.sendMessage({ action: 'addToWhitelist', url }, (response) => {
+            if (response.success) {
+                console.log(`URL успешно добавлен: ${url}`);
+                black_list.push(url)
+            } 
+            else {
+                console.error('Ошибка:', response.error);
+            }
+        });
+    } else {
+        console.log("пустое поле ввода");
+    }
 });
-
-
-// Кнопка открытия блого листа
