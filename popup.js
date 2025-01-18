@@ -5,28 +5,6 @@ const inputWhiteList = document.getElementById("input_white_list");
 const contentWhiteList = document.getElementById("content_white_list");
 const WhiteListURL = document.getElementById("open-white-list");
 
-// 1 - 5272220c5a9335749c17741babbc8bc54f48ace689f5a29b1c5653ca68068e4a
-// 2 - cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239
-const apiKey = "5272220c5a9335749c17741babbc8bc54f48ace689f5a29b1c5653ca68068e4a";
-const apiUrl = "https://www.virustotal.com/api/v3/urls";
-
-var black_list = ["chrome://extensions/", "about:blank", "chrome://newtab/",
-    "chrome-extension://kloheonpepgpngbdmgechkckdbilbioo/html/blockURL.html",
-    "chrome-extension://kloheonpepgpngbdmgechkckdbilbioo/html/history.html",
-    "chrome-extension://inlnholhelnepdinmgbennhcjpbokbmg/html/history.html"
-];
-
-
-// Проверка наличия в черном листе
-function CheckBlackList(url){
-    for (var i = 0; i < black_list.length; i++){
-        if (url === black_list[i]){
-            return false;
-    }};
-    console.log("URL нет в черном списке")
-    return true;
-};
-
 
 // Получение глобального URL
 function getBaseUrl(url) {
@@ -35,137 +13,169 @@ function getBaseUrl(url) {
 };
 
 
-// Функция кодирования URL
-function encodeUrl(url) {
-    return btoa(url).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+// Вывод WhiteList
+function WriteWhiteList(){
+  chrome.storage.local.get({ whitelist: [] }, (result) => {
+    const whitelist = result.whitelist || [];
+    const whitelistContainer = document.getElementById('whitelistItems');
+    whitelistContainer.innerHTML = '';
+    whitelist.forEach((url) => {
+      const li = document.createElement('li');
+      li.textContent = url;
+      whitelistContainer.appendChild(li);
+    });
+  });
 };
-
-
-// Проверка безопасности URL
-async function checkUrlSafety(url) {
-    try {
-        const encodedUrl = encodeUrl(url);
-        console.log(`Кодированный url: ${encodedUrl}`);
-
-        const response = await fetch(`${apiUrl}/${encodedUrl}`, {
-            method: "GET",
-            headers: {
-                "x-apikey": apiKey,
-            },
-        });
-
-        if (response.status === 404) {
-            console.log("Ошибка (404 от API)\n Вероятно, такого сайта нет в базе");
-            return null;
-        };
-        if (response.status === 429) {
-            console.log("Слишком много попыток");
-            return null;
-        };
-
-        const data = await response.json();
-        const stats = data.data.attributes.last_analysis_stats;
-
-        return [stats.harmless, stats.suspicious, stats.malicious];
-    } catch (error) {
-        console.log("Ошибка на стороне расширения (ответ от API не получен)");
-        return null;
-    }
-}
 
 
 // Добавление заблокированных сайтов
 document.addEventListener('DOMContentLoaded', () => {
-    chrome.storage.local.get({ blocked: [] }, (result) => {
-        const list = document.getElementById('blocked-list');
-        result.blocked.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = `[${item.time}] - ${item.url}`;
-            list.appendChild(li);
-        });
-    });
-});
+  chrome.storage.local.get({ blocked: [] }, (result) => {
+      const list = document.getElementById('blocked-list');
+      result.blocked.forEach(item => {
+          const DetailedResult = item.DetailedResult || [];
+          let malicious = "";
+          let suspicious = "";
 
+          if (DetailedResult.length > 0) {
+              for (let i = 0; i < DetailedResult.length; i++) {
+                  const strLine = DetailedResult[i];
+                  const curntLine = strLine.split(": ");
+                  const check_list = curntLine[0];
+                  const ans = curntLine[1];
+
+                  if (ans === "malicious") {
+                      malicious += `${check_list}, `;
+                  }
+                  if (ans === "suspicious") {
+                      suspicious += `${check_list}, `;
+                  }
+              }
+              malicious = malicious.slice(0, -2);
+              suspicious = suspicious.slice(0, -2);
+          }
+          const li = document.createElement('li');
+          li.textContent =
+              `[${item.time}] - 
+              ${item.url} - 
+              ${item.response[0]}, ${item.response[1]}, ${item.response[2]} - 
+              malicious: ${malicious} 
+              suspicious: ${suspicious}`;
+          list.appendChild(li);
+      });
+  });
+});
 
 
 // Переключение вкладок
 document.addEventListener("DOMContentLoaded", () => {
-    const tabButtons = document.querySelectorAll(".tab-button");
-    const tabContents = document.querySelectorAll(".tab-content");
+  const tabButtons = document.querySelectorAll(".tab-button");
+  const tabContents = document.querySelectorAll(".tab-content");
 
-    tabButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const targetTab = button.getAttribute("data-tab");
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetTab = button.getAttribute("data-tab");
 
-            // Удаляем активный класс со всех кнопок и вкладок
-            tabButtons.forEach((btn) => btn.classList.remove("active"));
-            tabContents.forEach((content) => content.classList.remove("active"));
+      // Удаляем активный класс со всех кнопок и вкладок
+      tabButtons.forEach((btn) => btn.classList.remove("active"));
+      tabContents.forEach((content) => content.classList.remove("active"));
 
-            // Добавляем активный класс на выбранную кнопку и вкладку
-            button.classList.add("active");
-            document.getElementById(targetTab).classList.add("active");
-        });
+      // Добавляем активный класс на выбранную кнопку и вкладку
+      button.classList.add("active");
+      document.getElementById(targetTab).classList.add("active");
     });
+  });
 });
-
 
 
 // Основная логика
 chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {{
-        let currentURL = tabs[0].url;
-        urlElement.textContent = `${currentURL}`;
-        console.log(`Текущий URL: ${currentURL}`);
-        let BasedURL = currentURL;
-        currentURL = getBaseUrl(currentURL);
-        console.log("Глобальный URL: " + currentURL)
-        urlElement.innerHTML += "<br>" + currentURL;
-        console.log(`Проверяемый URL: ${currentURL}`);
-        if (CheckBlackList(currentURL) && CheckBlackList(BasedURL)){
-            safetyResult = await checkUrlSafety(currentURL);
-            if (safetyResult) {
-                console.log(`Получен ответ:\n Безопасные: ${safetyResult[0]}\n Подозрительные: ${safetyResult[1]}\n Опасные: ${safetyResult[2]}`)
-                safetyElement.innerHTML = `
-                    Безопасные: ${safetyResult[0]} <br>
-                    Подозрительные: ${safetyResult[1]} <br>
-                    Опасные: ${safetyResult[2]}
-                `;
+    let currentURL = tabs[0].url;
+    console.log(`Текущий URL: ${currentURL}`);
+    let BasedURL = currentURL;
+    currentURL = getBaseUrl(currentURL);
+    console.log("Глобальный URL: " + currentURL);
+    urlElement.innerHTML = currentURL;
+    console.log(`Проверяемый URL: ${currentURL}`);
 
-                if (safetyResult[2] > 2 || safetyResult[1] > 2) {
-                    chrome.storage.local.get({ blocked: [] }, (result) => {
-                        let blocked = result.blocked;
-                        blocked.push({ url: currentURL, time: new Date().toLocaleString() });
-                        chrome.storage.local.set({ blocked: blocked });
-                    });
-                    chrome.tabs.update(tabs[0].id, { url: 'html/blockURL.html' });
-                    console.log('URL подозрителен или опасен, вкладка заменена.');
-                }
-
-            }
-            else{
-                safetyElement.innerHTML = "Вероятно такого url нет в базе"
-                console.log("Вероятно такого url нет в базе")
-            }
-        }
-        else{
-            safetyElement.innerHTML = "URL находится в черном списке"
-            console.log("URL находится в черном списке")
-        }
+    chrome.storage.local.get({ history: [] }, (result) => {
+      const history = result.history;
+  
+      if (history.length === 0) {
+          safetyElement.innerHTML = "откройте вкладку для начала работы";
+          return;
+      }
+      const lastCheck = history[history.length - 1];
+      const HSstatsWtiteList = lastCheck.statsWtiteList;
+      const HISsafetyResult = lastCheck.safetyResult;
+      const HIScurrentURL = lastCheck.currentURL;
+      const HISBasedURL = lastCheck.BasedURL;
+  
+      if (!HSstatsWtiteList) {
+          if (HIScurrentURL === currentURL && HISBasedURL === BasedURL) {
+              safetyElement.innerHTML = `
+                  Безопасные: ${HISsafetyResult[0]} <br>
+                  Подозрительные: ${HISsafetyResult[1]} <br>
+                  Опасные: ${HISsafetyResult[2]}
+              `;
+          } else {
+              safetyElement.innerHTML = "откройте вкладку для начала работы";
+          }
+      } else {
+          safetyElement.innerHTML = 
+          "URL находится в white list или скрыт по умолчанию";
+      }
+  });  
 }});
 
+
 // White лист
-document.getElementById('addWhitelistButton').addEventListener('click', () => {
-    const url = document.getElementById('whitelistInput').value.trim();
-    if (url) {
-        chrome.runtime.sendMessage({ action: 'addToWhitelist', url }, (response) => {
-            if (response.success) {
-                console.log(`URL успешно добавлен: ${url}`);
-                black_list.push(url)
-            } 
-            else {
-                console.error('Ошибка:', response.error);
-            }
-        });
+document.getElementById("addWhitelistButton").addEventListener("click", () => {
+  const url = document.getElementById("whitelistInput").value.trim();
+  if (url) {
+      chrome.storage.local.get("whitelist", (result) => {
+        const whitelist = result.whitelist || [];
+        if (!whitelist.includes(url)) {
+          whitelist.push(url);
+          chrome.storage.local.set({ whitelist }, () => {
+            console.log(`URL ${url} добавлен в whitelist.`);
+            document.getElementById("whitelistInput").value = ""
+            WriteWhiteList()
+          });
+        } else {
+          console.log(`URL ${url} уже существует в whitelist.`);
+          document.getElementById("whitelistInput").value = ""
+        }
+      });
     } else {
-        console.log("пустое поле ввода");
-    }
+    console.log("пустое поле ввода");
+  }
+});
+
+
+// Настройка порогов проверки
+// Настройка порогов проверки
+document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+  const suspiciousInput = document.getElementById('suspiciousThreshold');
+  const maliciousInput = document.getElementById('maliciousThreshold');
+
+  const suspiciousThreshold = parseInt(suspiciousInput.value, 10);
+  const maliciousThreshold = parseInt(maliciousInput.value, 10);
+
+  if (isNaN(suspiciousThreshold) || isNaN(maliciousThreshold)) {
+    console.warn('Введите корректные числовые значения.');
+    return;
+  }
+
+  chrome.storage.local.set({
+    thresholds: {
+      suspicious: suspiciousThreshold,
+      malicious: maliciousThreshold,
+    },
+  }, () => {
+    console.log(`Сохранены пороги: suspicious = ${suspiciousThreshold}, malicious = ${maliciousThreshold}`);
+  });
+
+  suspiciousInput.value = '';
+  maliciousInput.value = '';
 });
