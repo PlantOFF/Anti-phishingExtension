@@ -18,9 +18,7 @@ function WriteWhiteList() {
     chrome.storage.local.get({whitelist: []}, (result) => {
         const whitelist = result.whitelist || [];
         const whitelistContainer = document.getElementById('whitelistItems');
-        whitelistContainer.innerHTML = ''; // Очищаем контейнер перед обновлением
-
-        // Обновляем текст кнопки в зависимости от наличиства элементов
+        whitelistContainer.innerHTML = '';
         const toggleButton = document.getElementById('toggleWhitelistButton');
         toggleButton.disabled = whitelist.length === 0;
 
@@ -30,12 +28,10 @@ function WriteWhiteList() {
             li.style.alignItems = 'center';
             li.style.justifyContent = 'space-between';
 
-            // Текст с URL
             const urlText = document.createElement('span');
             urlText.textContent = url;
             li.appendChild(urlText);
 
-            // Кнопка удаления
             const deleteButton = document.createElement('button');
             deleteButton.textContent = '×'; // Крестик
             deleteButton.style.marginLeft = '10px';
@@ -45,7 +41,6 @@ function WriteWhiteList() {
             deleteButton.style.color = 'red';
             deleteButton.style.fontSize = '16px';
 
-            // Обработчик удаления URL
             deleteButton.addEventListener('click', () => {
                 removeFromWhitelist(url);
             });
@@ -64,7 +59,7 @@ document.getElementById("toggleWhitelistButton").addEventListener("click", () =>
     if (list.style.display === "none") {
         list.style.display = "block";
         button.textContent = "Скрыть список";
-        WriteWhiteList(); // Обновляем список при открытии
+        WriteWhiteList();
     } else {
         list.style.display = "none";
         button.textContent = "Показать список";
@@ -75,19 +70,18 @@ document.getElementById("toggleWhitelistButton").addEventListener("click", () =>
 function removeFromWhitelist(url) {
     chrome.storage.local.get({whitelist: []}, (result) => {
         const whitelist = result.whitelist || [];
-        const updatedWhitelist = whitelist.filter(item => item !== url); // Удаляем URL из массива
+        const updatedWhitelist = whitelist.filter(item => item !== url); 
 
-        // Сохраняем обновленный whitelist
         chrome.storage.local.set({whitelist: updatedWhitelist}, () => {
             console.log(`URL ${url} удален из whitelist.`);
-            WriteWhiteList(); // Обновляем отображение whitelist
+            WriteWhiteList(); 
         });
     });
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const history_data = []; // Глобальный массив для хранения данных
+    const history_data = [];
 
     chrome.storage.local.get({ blocked: [] }, (result) => {
         const list = document.getElementById('blocked-list');
@@ -124,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
               Подозрительный: ${suspicious}`;
             list.appendChild(li);
 
-            // Добавляем данные в массив history_data
             history_data.push({
                 date: item.time,
                 url: item.ALLURL,
@@ -134,25 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        console.log(history_data); // Проверяем, что данные собраны корректно
+        console.log(history_data);
     });
 
-    // Обработчик кнопки "Скачать данные"
     document.getElementById('downloadDataButton').addEventListener('click', () => {
         const format = document.getElementById('exportFormat').value;
 
-        // Проверяем, что массив history_data не пустой
         if (history_data.length === 0) {
             alert('Нет данных для экспорта.');
             return;
         }
 
         if (format === 'csv') {
-            // Преобразуем данные в CSV
             const csvData = convertToCSV(history_data);
             downloadFile(csvData, 'blocked_sites.csv', 'text/csv;charset=utf-8;');
         } else if (format === 'json') {
-            // Преобразуем данные в JSON
             const jsonData = JSON.stringify(history_data, null, 2);
             downloadFile(jsonData, 'blocked_sites.json', 'application/json;charset=utf-8;');
         }
@@ -169,11 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             const targetTab = button.getAttribute("data-tab");
 
-            // Удаляем активный класс со всех кнопок и вкладок
             tabButtons.forEach((btn) => btn.classList.remove("active"));
             tabContents.forEach((content) => content.classList.remove("active"));
 
-            // Добавляем активный класс на выбранную кнопку и вкладку
             button.classList.add("active");
             document.getElementById(targetTab).classList.add("active");
         });
@@ -232,7 +219,6 @@ chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
 });
 
 
-// White лист
 document.getElementById("addWhitelistButton").addEventListener("click", () => {
     const url = document.getElementById("whitelistInput").value.trim();
     if (url) {
@@ -258,7 +244,6 @@ document.getElementById("addWhitelistButton").addEventListener("click", () => {
 
 // Фильтр по истории блокировок
 document.addEventListener('DOMContentLoaded', () => {
-    // Функция для обновления списка баз данных
     chrome.storage.local.get({ blocked: [] }, (result) => {
         const blocked = result.blocked;
         const filterBases = document.getElementById("filterBases");
@@ -274,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Очищаем select перед добавлением новых значений
         filterBases.innerHTML = '<option value="">Все базы данных</option>';
         uniqueBases.forEach(base => {
             const option = document.createElement("option");
@@ -284,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Функция для обновления списка доменов
     chrome.storage.local.get({ blocked: [] }, (result) => {
         const blocked = result.blocked;
         const filterDomains = document.getElementById("filterBlockedSites");
@@ -295,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
         blocked.forEach(item => {
             try {
                 const url = new URL(item.ALLURL);
-                const domain = `${url.hostname}`; // Извлекаем только hostname без протокола
+                const domain = `${url.hostname}`;
                 uniqueDomains.add(domain);
             } catch (e) {
                 console.warn(`Неверный URL: ${item.ALLURL}`);
@@ -310,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Обработчик кнопки "Применить"
     document.getElementById("showFilteredHistoryBtn").addEventListener("click", () => {
         const selectedBase = document.getElementById("filterBases").value;
         const selectedDomain = document.getElementById("filterBlockedSites").value;
@@ -318,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endDateValue = document.getElementById("endDate").value;
         const list = document.getElementById("blocked-list");
 
-        list.innerHTML = ""; // Очищаем список перед добавлением новых записей
+        list.innerHTML = "";
 
         chrome.storage.local.get({ blocked: [] }, (result) => {
             const blocked = result.blocked;
@@ -329,21 +311,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 let malicious = "";
                 let suspicious = "";
 
-                // Проверка домена
                 let itemDomain = "";
                 try {
                     const url = new URL(item.ALLURL);
                     itemDomain = url.hostname;
                     if (selectedDomain && itemDomain !== selectedDomain) {
-                        includeItem = false; // Если выбранный домен не совпадает — исключаем запись
+                        includeItem = false;
                     }
                 } catch (e) {
                     console.warn(`Неверный URL: ${item.ALLURL}`);
                     includeItem = false;
                 }
 
-                // Проверка базы данных
-                let baseMatch = !selectedBase; // Если база не выбрана, пропускаем проверку
+                let baseMatch = !selectedBase; 
                 const DetailedResult = item.DetailedResult || [];
                 DetailedResult.forEach(result => {
                     const [base, status] = result.split(": ");
@@ -358,11 +338,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Очистка запятых в строках
                 malicious = malicious.slice(0, -2) || "Нет";
                 suspicious = suspicious.slice(0, -2) || "Нет";
 
-                // Проверка даты
                 const recordTime = new Date(item.time);
                 const startDate = startDateValue ? new Date(startDateValue) : null;
                 const endDate = endDateValue ? new Date(endDateValue + 'T23:59:59') : null;
@@ -370,7 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isAfterStartDate = !startDate || recordTime >= startDate;
                 const isBeforeEndDate = !endDate || recordTime <= endDate;
 
-                // Если запись соответствует всем условиям, добавляем её в список
                 if (includeItem && baseMatch && isAfterStartDate && isBeforeEndDate) {
                     if (!uniqueEntries.has(item.time)) {
                         uniqueEntries.add(item.time);
@@ -397,8 +374,7 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
 
     const suspiciousThreshold = parseInt(suspiciousInput.value, 10);
     const maliciousThreshold = parseInt(maliciousInput.value, 10);
-
-    // Проверка на отрицательные значения
+    
     if (isNaN(suspiciousThreshold) || suspiciousThreshold < 0) {
         console.warn('Подозрительный порог должен быть неотрицательным числом.');
         alert('Введите неотрицательное значение для подозрительного порога.');
@@ -410,7 +386,6 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
         return;
     }
 
-    // Сохраняем настройки в локальное хранилище
     chrome.storage.local.set({
         thresholds: {
             suspicious: suspiciousThreshold,
@@ -426,17 +401,13 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
 
 function convertToCSV(data) {
     const csvRows = [];
-    
-    // Заголовки таблицы
     const headers = Object.keys(data[0]);
-    csvRows.push(headers.join(',')); // Разделяем заголовки запятыми
+    csvRows.push(headers.join(','));
 
-    // Добавляем строки данных
     for (const row of data) {
         const values = headers.map(header => {
             let value = row[header];
             if (typeof value === 'string') {
-                // Экранируем кавычки и запятые внутри строковых значений
                 value = value.replace(/"/g, '""');
                 if (value.includes(',') || value.includes('"') || value.includes('\n')) {
                     value = `"${value}"`;
@@ -449,7 +420,7 @@ function convertToCSV(data) {
         csvRows.push(values.join(','));
     }
 
-    return csvRows.join('\n'); // Разделяем строки символом новой строки
+    return csvRows.join('\n');
 }
 
 function downloadFile(data, filename, mimeType) {
