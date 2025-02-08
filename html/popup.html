@@ -8,14 +8,12 @@
 </head>
 <body>
 <div id="main_div">
-    <!-- Вкладки -->
     <div id="tabs">
         <button class="tab-button active" data-tab="urlTab">Текущий URL</button>
         <button class="tab-button" data-tab="historyTab">История блокировок</button>
         <button class="tab-button" data-tab="whitelistTab">Whitelist</button>
         <button class="tab-button" data-tab="settingsTab">Настройки</button>
     </div>
-    <!-- Содержимое вкладок -->
     <div id="urlTab" class="tab-content active">
         <h2>Текущий URL</h2>
         <div id="urlBox">
@@ -35,9 +33,9 @@
             </select>
         </div>
         <label for="startDate">Начальная дата:</label>
-            <input type="date" id="startDate">
+        <input type="date" id="startDate">
         <label for="endDate">Конечная дата:</label>
-            <input type="date" id="endDate">
+        <input type="date" id="endDate">
         <button id="showFilteredHistoryBtn">Применить</button>
         <ul id="blocked-list"></ul>
     </div>
@@ -71,7 +69,7 @@
 
             <p>Настройки конфиденциальности</p>
             <button id="clearHistoryButton">Очистить историю</button>
-            
+
         </div>
     </div>
 </div>

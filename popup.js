@@ -1,16 +1,12 @@
 const urlElement = document.getElementById("URL");
 const safetyElement = document.getElementById("safety");
-const openHistoryButton = document.getElementById("open-history");
-const inputWhiteList = document.getElementById("input_white_list");
-const contentWhiteList = document.getElementById("content_white_list");
-const WhiteListURL = document.getElementById("open-white-list");
 
 
 // Получение глобального URL
 function getBaseUrl(url) {
     const parsedUrl = new URL(url);
     return `${parsedUrl.protocol}//${parsedUrl.host}`;
-};
+}
 
 
 // Вывод WhiteList с кнопкой удаления
@@ -19,6 +15,7 @@ function WriteWhiteList() {
         const whitelist = result.whitelist || [];
         const whitelistContainer = document.getElementById('whitelistItems');
         whitelistContainer.innerHTML = '';
+
         const toggleButton = document.getElementById('toggleWhitelistButton');
         toggleButton.disabled = whitelist.length === 0;
 
@@ -55,7 +52,7 @@ function WriteWhiteList() {
 document.getElementById("toggleWhitelistButton").addEventListener("click", () => {
     const list = document.getElementById("whitelistItems");
     const button = document.getElementById("toggleWhitelistButton");
-    
+
     if (list.style.display === "none") {
         list.style.display = "block";
         button.textContent = "Скрыть список";
@@ -70,11 +67,11 @@ document.getElementById("toggleWhitelistButton").addEventListener("click", () =>
 function removeFromWhitelist(url) {
     chrome.storage.local.get({whitelist: []}, (result) => {
         const whitelist = result.whitelist || [];
-        const updatedWhitelist = whitelist.filter(item => item !== url); 
+        const updatedWhitelist = whitelist.filter(item => item !== url);
 
         chrome.storage.local.set({whitelist: updatedWhitelist}, () => {
             console.log(`URL ${url} удален из whitelist.`);
-            WriteWhiteList(); 
+            WriteWhiteList();
         });
     });
 }
@@ -83,7 +80,7 @@ function removeFromWhitelist(url) {
 document.addEventListener('DOMContentLoaded', () => {
     const history_data = [];
 
-    chrome.storage.local.get({ blocked: [] }, (result) => {
+    chrome.storage.local.get({blocked: []}, (result) => {
         const list = document.getElementById('blocked-list');
 
         result.blocked.forEach(item => {
@@ -179,10 +176,11 @@ chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
         urlElement.innerHTML = currentURL;
         console.log(`Проверяемый URL: ${currentURL}`);
 
-        if (currentURL === "chrome-extension://foigjkpkfbdhgakepeblljommemkolbo"){
+        if (currentURL === "chrome-extension://foigjkpkfbdhgakepeblljommemkolbo") {
             safetyElement.innerHTML = "Открыта страница блокировки";
             return;
-        };
+        }
+
         chrome.storage.local.get({history: []}, (result) => {
             const history = result.history;
 
@@ -190,35 +188,37 @@ chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
                 safetyElement.innerHTML = "откройте сайт для начала работы";
                 return;
             }
-            try{
-            const lastCheck = history[history.length - 1];
-            const HSstatsWtiteList = lastCheck.statsWtiteList;
-            const HISsafetyResult = lastCheck.safetyResult;
-            const HIScurrentURL = lastCheck.currentURL;
-            const HISALLURL = lastCheck.ALLURL;
+            try {
+                const lastCheck = history[history.length - 1];
+                const HSstatsWtiteList = lastCheck.statsWtiteList;
+                const HISsafetyResult = lastCheck.safetyResult;
+                const HIScurrentURL = lastCheck.currentURL;
+                const HISALLURL = lastCheck.ALLURL;
 
-            if (!HSstatsWtiteList) {
-                if (HIScurrentURL === currentURL && HISALLURL === ALLURL) {
-                    safetyElement.innerHTML = `
+                if (!HSstatsWtiteList) {
+                    if (HIScurrentURL === currentURL && HISALLURL === ALLURL) {
+                        safetyElement.innerHTML = `
                   Безопасные: ${HISsafetyResult[0]} <br>
                   Подозрительные: ${HISsafetyResult[1]} <br>
                   Опасные: ${HISsafetyResult[2]}
               `;
+                    } else {
+                        safetyElement.innerHTML = "откройте вкладку для начала работы";
+                    }
                 } else {
-                    safetyElement.innerHTML = "откройте вкладку для начала работы";
+                    safetyElement.innerHTML =
+                        "URL находится в white list или скрыт по умолчанию";
                 }
-            } else {
-                safetyElement.innerHTML =
-                    "URL находится в white list или скрыт по умолчанию";
-            }
-            } catch{
+            } catch {
                 safetyElement.innerHTML = "откройте сайт для начала работы";
             }
         });
-    };
+    }
+
 });
 
 
+// White лист
 document.getElementById("addWhitelistButton").addEventListener("click", () => {
     const url = document.getElementById("whitelistInput").value.trim();
     if (url) {
@@ -244,7 +244,7 @@ document.getElementById("addWhitelistButton").addEventListener("click", () => {
 
 // Фильтр по истории блокировок
 document.addEventListener('DOMContentLoaded', () => {
-    chrome.storage.local.get({ blocked: [] }, (result) => {
+    chrome.storage.local.get({blocked: []}, (result) => {
         const blocked = result.blocked;
         const filterBases = document.getElementById("filterBases");
         const uniqueBases = new Set();
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    chrome.storage.local.get({ blocked: [] }, (result) => {
+    chrome.storage.local.get({blocked: []}, (result) => {
         const blocked = result.blocked;
         const filterDomains = document.getElementById("filterBlockedSites");
         const uniqueDomains = new Set();
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         list.innerHTML = "";
 
-        chrome.storage.local.get({ blocked: [] }, (result) => {
+        chrome.storage.local.get({blocked: []}, (result) => {
             const blocked = result.blocked;
             const uniqueEntries = new Set();
 
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     includeItem = false;
                 }
 
-                let baseMatch = !selectedBase; 
+                let baseMatch = !selectedBase;
                 const DetailedResult = item.DetailedResult || [];
                 DetailedResult.forEach(result => {
                     const [base, status] = result.split(": ");
@@ -374,7 +374,7 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
 
     const suspiciousThreshold = parseInt(suspiciousInput.value, 10);
     const maliciousThreshold = parseInt(maliciousInput.value, 10);
-    
+
     if (isNaN(suspiciousThreshold) || suspiciousThreshold < 0) {
         console.warn('Подозрительный порог должен быть неотрицательным числом.');
         alert('Введите неотрицательное значение для подозрительного порога.');
@@ -401,6 +401,7 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
 
 function convertToCSV(data) {
     const csvRows = [];
+
     const headers = Object.keys(data[0]);
     csvRows.push(headers.join(','));
 
@@ -424,7 +425,7 @@ function convertToCSV(data) {
 }
 
 function downloadFile(data, filename, mimeType) {
-    const blob = new Blob([data], { type: mimeType });
+    const blob = new Blob([data], {type: mimeType});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.style.display = 'none';
@@ -438,7 +439,7 @@ function downloadFile(data, filename, mimeType) {
 
 // Очистка истории
 document.getElementById('clearHistoryButton').addEventListener('click', () => {
-    chrome.storage.local.set({ blocked: [] }, () => {
+    chrome.storage.local.set({blocked: []}, () => {
         console.log("История очищена.");
         const list = document.getElementById('blocked-list');
         list.innerHTML = "";

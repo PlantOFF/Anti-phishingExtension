@@ -1,9 +1,12 @@
 const apiKey = "cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239";
+
+
 const apiUrl = "https://www.virustotal.com/api/v3/urls";
 const defaultWhitelist = [
     "chrome://extensions",
     "about:blank",
     "chrome://newtab/",
+    "chrome-extension://gipbbmhjapeihenlnefpbijkfinidcmk",
     "https://www.google.com",
     "https://www.yandex.ru",
     "https://yandex.ru",
@@ -19,7 +22,7 @@ const defultUserThresholds = {
 // Инициализации whitelist
 chrome.storage.local.get("whitelist", (result) => {
     if (!result.whitelist) {
-        chrome.storage.local.set({ whitelist: defaultWhitelist }, () => {
+        chrome.storage.local.set({whitelist: defaultWhitelist}, () => {
             console.log("Whitelist инициализирован значениями по умолчанию.");
         });
     }
@@ -31,7 +34,7 @@ function CheckThresholds() {
     return new Promise((resolve) => {
         chrome.storage.local.get("thresholds", (result) => {
             if (!result.thresholds) {
-                chrome.storage.local.set({ thresholds: defultUserThresholds }, () => {
+                chrome.storage.local.set({thresholds: defultUserThresholds}, () => {
                     console.log("Инициализация значений порогов проверки по умолчанию");
                     resolve(defultUserThresholds);
                 });
@@ -46,9 +49,10 @@ function CheckThresholds() {
 // Функция для получения текущего whitelist
 function getWhitelist(callback) {
     chrome.storage.local.get("whitelist", (result) => {
-      const whitelist = result.whitelist || [];
-      callback(whitelist);
-})};
+        const whitelist = result.whitelist || [];
+        callback(whitelist);
+    })
+}
 
 
 // Функция кодирования URL
@@ -65,47 +69,47 @@ async function checkBlackList(url) {
             resolve(isBlacklisted);
         });
     });
-};
+}
 
 
 // Получение глобального URL
 function getBaseUrl(url) {
     const parsedUrl = new URL(url);
     return `${parsedUrl.protocol}//${parsedUrl.host}`;
-};
+}
 
 
 // Проверка безопасности URL
 async function checkUrlSafety(url) {
     try {
-      const encodedUrl = encodeUrl(url);
-      console.log(`Кодированный url: ${encodedUrl}`);
-  
-      const response = await fetch(`${apiUrl}/${encodedUrl}`, {
-        method: "GET",
-        headers: {
-          "x-apikey": apiKey,
-        },
-      });
-      if (response.status === 404) {
-        console.log("Ошибка (404 от API)\n Вероятно, такого сайта нет в базе");
-        return null;
-      }
-      if (response.status === 429) {
-        console.log("Слишком много попыток");
-        return null;
-      }
-  
-      const data = await response.json();
-      const stats = data.data.attributes.last_analysis_stats;
-      const results = data.data.attributes.last_analysis_results;
-  
-      return [stats.harmless, stats.suspicious, stats.malicious, results];
+        const encodedUrl = encodeUrl(url);
+        console.log(`Кодированный url: ${encodedUrl}`);
+
+        const response = await fetch(`${apiUrl}/${encodedUrl}`, {
+            method: "GET",
+            headers: {
+                "x-apikey": apiKey,
+            },
+        });
+        if (response.status === 404) {
+            console.log("Ошибка (404 от API)\n Вероятно, такого сайта нет в базе");
+            return null;
+        }
+        if (response.status === 429) {
+            console.log("Слишком много попыток");
+            return null;
+        }
+
+        const data = await response.json();
+        const stats = data.data.attributes.last_analysis_stats;
+        const results = data.data.attributes.last_analysis_results;
+
+        return [stats.harmless, stats.suspicious, stats.malicious, results];
     } catch (error) {
-      console.log("Ошибка на стороне расширения (ответ от API не получен)");
-      return null;
+        console.log("Ошибка на стороне расширения (ответ от API не получен)");
+        return null;
     }
-};
+}
 
 // Обновление вкладок
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -153,8 +157,8 @@ async function handleTabUpdate(tabId, tab) {
                 console.log(DetailedResult);
 
                 if (safetyResult[1] > thresholds.suspicious || safetyResult[2] > thresholds.malicious) {
-                    chrome.tabs.update(tabId, { url: 'html/blockURL.html' });
-                    chrome.storage.local.get({ blocked: [] }, (result) => {
+                    chrome.tabs.update(tabId, {url: 'html/blockURL.html'});
+                    chrome.storage.local.get({blocked: []}, (result) => {
                         let blocked = result.blocked;
                         const currentTime = new Date().toISOString();
                         blocked.push({
@@ -165,13 +169,13 @@ async function handleTabUpdate(tabId, tab) {
                             DetailedResult: DetailedResult,
                             time: currentTime
                         });
-                        chrome.storage.local.set({ blocked: blocked });
+                        chrome.storage.local.set({blocked: blocked});
                     });
                     console.log("URL заблокирован.");
                 }
-                }
+            }
 
-            chrome.storage.local.get({ history: [] }, (result) => {
+            chrome.storage.local.get({history: []}, (result) => {
                 let history = result.history;
                 const currentTime = new Date().toISOString();
                 history.push({
@@ -181,9 +185,8 @@ async function handleTabUpdate(tabId, tab) {
                     ALLURL: ALLURL,
                     time: currentTime
                 });
-                chrome.storage.local.set({ history: history });
+                chrome.storage.local.set({history: history});
             });
-            return;
         } else {
             console.log("URL в черном списке");
         }

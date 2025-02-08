@@ -11,44 +11,43 @@ body {
     box-sizing: border-box;
 }
 
-/* Основной контейнер */
 #main_div {
     background: linear-gradient(to bottom, #2b2b3d, #1e1e2f);
     border: 1px solid #444;
     border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
     padding: 20px;
-    width: 450px; /* Фиксированная ширина */
-    height: 600px; /* Фиксированная высота */
-    overflow-y: auto; /* Вертикальная прокрутка */
+    width: 450px;
+    height: 600px;
+    overflow-y: auto;
     box-sizing: border-box;
 }
+
 #main_div::-webkit-scrollbar {
-    width: 8px; /* Ширина полосы прокрутки */
+    width: 8px;
 }
 
 #main_div::-webkit-scrollbar-track {
-    background: #2b2b3d; /* Цвет трека полосы прокрутки */
-    border-radius: 8px; /* Скругленные края трека */
+    background: #2b2b3d;
+    border-radius: 8px;
 }
 
 #main_div::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #565679, #73739b); /* Градиент для ползунка */
-    border-radius: 8px; /* Скругленные края */
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Тень для ползунка */
+    background: linear-gradient(45deg, #565679, #73739b);
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 #main_div::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #73739b, #8989af); /* Цвет ползунка при наведении */
+    background: linear-gradient(45deg, #73739b, #8989af);
 }
-/* Заголовки */
+
 h2 {
     font-size: 24px;
     color: #f0f0f0;
     margin-bottom: 15px;
 }
 
-/* Вкладки */
 #tabs {
     display: flex;
     justify-content: space-around;
@@ -78,7 +77,6 @@ h2 {
     background-color: #3a3a56;
 }
 
-/* Содержимое вкладок */
 .tab-content {
     display: none;
     padding: 20px;
@@ -92,7 +90,6 @@ h2 {
     display: block;
 }
 
-/* URL Box и История */
 #urlBox, #logs, #whitelist {
     background-color: #1e1e2f;
     border: 1px solid #555;
@@ -104,7 +101,6 @@ h2 {
     max-height: 350px;
 }
 
-/* Список заблокированных URL */
 #blocked-list {
     list-style: none;
     padding: 0;
@@ -116,9 +112,9 @@ h2 {
     padding: 5px 10px;
     background-color: #3a3a56;
     border-radius: 5px;
-    word-wrap: break-word; /* Позволяет тексту переноситься */
-    word-break: break-all; /* Разрешает перенос длинных слов/URL */
-    white-space: normal; /* Позволяет тексту занимать несколько строк */
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
 }
 
 /* Поля ввода */
@@ -133,7 +129,6 @@ input[type="text"] {
     font-size: 14px;
 }
 
-/* Кнопки */
 button {
     font-size: 16px;
     padding: 10px 20px;
@@ -226,57 +221,55 @@ button:active {
 
 #historyTab select,
 #historyTab input[type="date"] {
-    width: 80%; /* Полная ширина родителя */
-    padding: 10px; /* Внутренний отступ */
-    margin-bottom: 10px; /* Отступ снизу */
-    background-color: #1e1e2f; /* Темный фон */
-    color: #f0f0f0; /* Цвет текста */
-    border: 1px solid #555; /* Граница */
-    border-radius: 8px; /* Скругленные края */
-    font-size: 14px; /* Размер шрифта */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Тень */
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #1e1e2f;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 #historyTab select:hover,
 #historyTab input[type="date"]:hover {
-    border-color: #73739b; /* Цвет границы при наведении */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Усиленная тень при наведении */
+    border-color: #73739b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 #historyTab select:focus,
 #historyTab input[type="date"]:focus {
-    border-color: #ff7675; /* Цвет границы при фокусе */
-    outline: none; /* Убираем стандартный фокус */
-    box-shadow: 0 0 10px rgba(255, 118, 117, 0.7); /* Подсветка фокуса */
+    border-color: #ff7675;
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 118, 117, 0.7);
 }
 
-/* Перенос длинных строк в списке whitelist */
 #whitelist {
-    word-wrap: break-word; /* Перенос длинных строк */
-    word-break: break-word; /* Разрешаем перенос длинных слов */
-    white-space: normal; /* Отключаем однострочный режим */
-    padding: 10px; /* Отступы внутри списка */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Тень */
-    color: #f0f0f0; /* Цвет текста */
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: #f0f0f0;
 }
 
-/* Полоса прокрутки для WebKit-браузеров */
 #whitelist::-webkit-scrollbar {
-    width: 8px; /* Ширина полосы прокрутки */
+    width: 8px;
 }
 
 #whitelist::-webkit-scrollbar-track {
-    background: #2b2b3d; /* Цвет трека полосы прокрутки */
-    border-radius: 8px; /* Скруглённые края трека */
+    background: #2b2b3d;
+    border-radius: 8px;
 }
 
 #whitelist::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #565679, #73739b); /* Градиент для ползунка */
-    border-radius: 8px; /* Скруглённые края */
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Тень для ползунка */
+    background: linear-gradient(45deg, #565679, #73739b);
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 #whitelist::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #73739b, #8989af); /* Цвет при наведении */
+    background: linear-gradient(45deg, #73739b, #8989af);
 }
