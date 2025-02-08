@@ -1,7 +1,4 @@
 const apiKey = "cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239";
-// 1 - 5272220c5a9335749c17741babbc8bc54f48ace689f5a29b1c5653ca68068e4a
-// 2 - cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239
-
 const apiUrl = "https://www.virustotal.com/api/v3/urls";
 const defaultWhitelist = [
     "chrome://extensions",
@@ -160,14 +157,14 @@ async function handleTabUpdate(tabId, tab) {
                     chrome.tabs.update(tabId, { url: 'html/blockURL.html' });
                     chrome.storage.local.get({ blocked: [] }, (result) => {
                         let blocked = result.blocked;
-                        const currentTime = new Date().toISOString(); // Получаем текущее время в формате ISO
+                        const currentTime = new Date().toISOString();
                         blocked.push({
                             url: currentURL,
                             ALLURL: ALLURL,
                             time: new Date().toLocaleString(),
                             response: safetyResult,
                             DetailedResult: DetailedResult,
-                            time: currentTime // Добавляем время записи
+                            time: currentTime
                         });
                         chrome.storage.local.set({ blocked: blocked });
                     });
@@ -177,13 +174,13 @@ async function handleTabUpdate(tabId, tab) {
 
             chrome.storage.local.get({ history: [] }, (result) => {
                 let history = result.history;
-                const currentTime = new Date().toISOString(); // Получаем текущее время в формате ISO
+                const currentTime = new Date().toISOString();
                 history.push({
                     statsWtiteList: statsWtiteList,
                     safetyResult: safetyResult,
                     currentURL: currentURL,
                     ALLURL: ALLURL,
-                    time: currentTime // Добавляем время записи
+                    time: currentTime
                 });
                 chrome.storage.local.set({ history: history });
             });
