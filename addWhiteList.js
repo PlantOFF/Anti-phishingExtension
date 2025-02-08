@@ -57,9 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = document.getElementById('reasons-list');
         const li = document.createElement('li');
         
-        // Проверяем, есть ли элементы в массиве blocked
         if (result.blocked.length > 0) {
-            // Берем последний элемент из массива
             const lastItem = result.blocked[result.blocked.length - 1];
             const DetailedResult = lastItem.DetailedResult || [];
             let malicious = "";
