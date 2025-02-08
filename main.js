@@ -4,7 +4,6 @@ const defaultWhitelist = [
     "chrome://extensions",
     "about:blank",
     "chrome://newtab/",
-    "chrome-extension://gipbbmhjapeihenlnefpbijkfinidcmk",
     "https://www.google.com",
     "https://www.yandex.ru",
     "https://yandex.ru",
