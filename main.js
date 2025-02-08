@@ -3,18 +3,20 @@ const apiKey = "cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239
 // 2 - cd87ccaf0717dec26cdb5aef31d5468323f915836465dd49bed358233ef45239
 
 const apiUrl = "https://www.virustotal.com/api/v3/urls";
-const defaultWhitelist = ["chrome://extensions", "about:blank", "chrome://newtab/",
-    "chrome-extension://kloheonpepgpngbdmgechkckdbilbioo/html/blockURL.html",
-    "chrome-extension://kloheonpepgpngbdmgechkckdbilbioo/html/history.html",
-    "chrome-extension://inlnholhelnepdinmgbennhcjpbokbmg/html/history.html",
-    "chrome-extension://khndaeiicffojkhnnipnfjdenhcjnham",
-    "chrome-extension://lebpdbamallemffholehndlklfdffbmp/html/blockURL.html",
-    "chrome-extension://lebpdbamallemffholehndlklfdffbmp"
+const defaultWhitelist = [
+    "chrome://extensions",
+    "about:blank",
+    "chrome://newtab/",
+    "chrome-extension://gipbbmhjapeihenlnefpbijkfinidcmk",
+    "https://www.google.com",
+    "https://www.yandex.ru",
+    "https://yandex.ru",
+    "https://ya.ru"
 ];
 
 const defultUserThresholds = {
     suspicious: 1,
-    malicious: 0,
+    malicious: 1,
 };
 
 
@@ -107,7 +109,7 @@ async function checkUrlSafety(url) {
       console.log("Ошибка на стороне расширения (ответ от API не получен)");
       return null;
     }
-};  
+};
 
 // Обновление вкладок
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -129,15 +131,15 @@ async function handleTabUpdate(tabId, tab) {
 
         let currentURL = tab.url;
         console.log(`Текущий url: ${currentURL}`);
-        let BasedURL = currentURL;
+        let ALLURL = currentURL;
         currentURL = getBaseUrl(currentURL);
         console.log("Проверяемый URL: " + currentURL);
 
         const isCurrentURLBlacklisted = await checkBlackList(currentURL);
-        const isBasedURLBlacklisted = await checkBlackList(BasedURL);
+        const isALLURLBlacklisted = await checkBlackList(ALLURL);
         let statsWtiteList = true;
 
-        if (currentURL && !isCurrentURLBlacklisted && !isBasedURLBlacklisted) {
+        if (currentURL && !isCurrentURLBlacklisted && !isALLURLBlacklisted) {
             statsWtiteList = false;
             console.log("URL нет в черном списке");
             let safetyResult = await checkUrlSafety(currentURL);
@@ -158,11 +160,14 @@ async function handleTabUpdate(tabId, tab) {
                     chrome.tabs.update(tabId, { url: 'html/blockURL.html' });
                     chrome.storage.local.get({ blocked: [] }, (result) => {
                         let blocked = result.blocked;
+                        const currentTime = new Date().toISOString(); // Получаем текущее время в формате ISO
                         blocked.push({
                             url: currentURL,
+                            ALLURL: ALLURL,
                             time: new Date().toLocaleString(),
                             response: safetyResult,
-                            DetailedResult: DetailedResult
+                            DetailedResult: DetailedResult,
+                            time: currentTime // Добавляем время записи
                         });
                         chrome.storage.local.set({ blocked: blocked });
                     });
@@ -172,11 +177,13 @@ async function handleTabUpdate(tabId, tab) {
 
             chrome.storage.local.get({ history: [] }, (result) => {
                 let history = result.history;
+                const currentTime = new Date().toISOString(); // Получаем текущее время в формате ISO
                 history.push({
                     statsWtiteList: statsWtiteList,
                     safetyResult: safetyResult,
                     currentURL: currentURL,
-                    BasedURL: BasedURL
+                    ALLURL: ALLURL,
+                    time: currentTime // Добавляем время записи
                 });
                 chrome.storage.local.set({ history: history });
             });

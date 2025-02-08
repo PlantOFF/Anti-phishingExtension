@@ -13,6 +13,7 @@
         <button class="tab-button active" data-tab="urlTab">Текущий URL</button>
         <button class="tab-button" data-tab="historyTab">История блокировок</button>
         <button class="tab-button" data-tab="whitelistTab">Whitelist</button>
+        <button class="tab-button" data-tab="settingsTab">Настройки</button>
     </div>
     <!-- Содержимое вкладок -->
     <div id="urlTab" class="tab-content active">
@@ -25,10 +26,20 @@
     </div>
     <div id="historyTab" class="tab-content">
         <h2>История блокировок</h2>
-        <div id="logs">
-
-            <ul id="blocked-list"></ul>
+        <div>
+            <select id="filterBases">
+                <option value="">Все базы данных</option>
+            </select>
+            <select id="filterBlockedSites">
+                <option value="">Все сайты</option>
+            </select>
         </div>
+        <label for="startDate">Начальная дата:</label>
+            <input type="date" id="startDate">
+        <label for="endDate">Конечная дата:</label>
+            <input type="date" id="endDate">
+        <button id="showFilteredHistoryBtn">Применить</button>
+        <ul id="blocked-list"></ul>
     </div>
     <div id="whitelistTab" class="tab-content">
         <h2>Whitelist</h2>
@@ -36,10 +47,31 @@
             <p>Добавьте URL в белый список:</p>
             <input type="text" id="whitelistInput" placeholder="Введите URL">
             <button id="addWhitelistButton">Добавить</button>
-            <div id="whitelistItems"></div>
-            <input type="text" id="suspiciousThreshold" placeholder="Подозрительный порог">
-            <input type="text" id="maliciousThreshold" placeholder="Опасный порог">
-            <button id="saveSettingsBtn">Сохранить</button>
+            <button id="toggleWhitelistButton">Показать список</button>
+            <ul id="whitelistItems" style="display: none;"></ul>
+        </div>
+    </div>
+    <div id="settingsTab" class="tab-content">
+        <h2>Настройки</h2>
+        <div id="settings">
+            <p>Настройте пороги для проверки URL:</p>
+            <label for="settingsSuspiciousThreshold">Подозрительный порог:</label>
+            <input type="number" id="settingsSuspiciousThreshold" placeholder="Введите значение" min="0">
+            <label for="settingsMaliciousThreshold">Опасный порог:</label>
+            <input type="number" id="settingsMaliciousThreshold" placeholder="Введите значение" min="0">
+            <button id="saveSettingsButton">Сохранить настройки</button>
+
+            <h3>Экспорт данных</h3>
+            <p>Скачайте данные о заблокированных сайтах:</p>
+            <select id="exportFormat">
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+            </select>
+            <button id="downloadDataButton">Скачать данные</button>
+
+            <p>Настройки конфиденциальности</p>
+            <button id="clearHistoryButton">Очистить историю</button>
+            
         </div>
     </div>
 </div>
